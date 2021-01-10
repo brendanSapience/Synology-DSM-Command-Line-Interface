@@ -42,6 +42,12 @@ The **Session Name** needs to be passed in all calls (it serves to retrieve the 
 
 Apart from the initial authentication call, each call should contain **at least 1 option**: **-s** (**-s** is used to specify the **Session Name**.)
 
+The output format can be set to CSV, DF (DataFrame) or JSON (Default) by using the -f option in addition to the -s option:
+
+```
+python ./synocli.py -s OrangeElephant -f DF package list
+```
+
 ## Commands & Subcommands Currently Available:
 
 * auth
@@ -50,7 +56,10 @@ Apart from the initial authentication call, each call should contain **at least 
   * list: list existing Sessions
 * network
   * show: show network information
-
+* packages
+  * list
+  * start
+  * stop 
 
 ## TO DO
 

@@ -11,8 +11,6 @@ import StdResponses
 import AuthResponses
 import logging
 
-logging.basicConfig(level=logging.DEBUG)
-
 def get_login_url(dsmversion, login, password, sessionname):
 
     CgiModule=""

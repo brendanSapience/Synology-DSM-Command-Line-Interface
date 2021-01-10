@@ -10,26 +10,34 @@
 
 import argparse
 import sys
+import logging
 sys.path.insert(1, './logics')
 sys.path.insert(1, './libs')
 import AuthLogics
 import NetworkLogics
+import PackageLogics
 import DataUtils
 
+VERSION="0.0.1"
 DEFAULT_DSM_VERSION = "7.0"
 SupportedDSMVersions = ["7.0"]
 
-#####
-# NETWORK Functions
-#####
-
-def network(args):
-    if not args.SESSIONNAME:
-        parser.error('no session name passed')
-    NetworkLogics.get_network_info(args.SESSIONNAME)
+logging.basicConfig(level=logging.ERROR)
 
 #####
-# AUTH Functions
+# General Parser
+#####
+
+parser = argparse.ArgumentParser()
+parser.add_argument('-v','--version', action='version', version=VERSION)
+parser.add_argument('-s','--session',type=str,default="", help='Session Name',dest="SESSIONNAME")
+parser.add_argument('-f','--format',type=str,default="JSON", help='Output Format <JSON,CSV,DF>',dest="OUTPUTFORMAT")
+subparsers = parser.add_subparsers()
+
+#####
+# AUTH Parser
+# Authentication commands
+# auth <login,logout,list>
 #####
 
 def login(args):
@@ -51,20 +59,6 @@ def logout(args):
 def listsessions(args):
     AuthLogics.listSessions()
 
-#####
-# ALL Parsers
-#####
-
-parser = argparse.ArgumentParser()
-parser.add_argument('--version', action='version', version='0.0.1')
-subparsers = parser.add_subparsers()
-
-#####
-# AUTH Parser
-# Authentication commands
-# auth <login,logout,list>
-#####
-
 auth_parser = subparsers.add_parser('auth')
 auth_subparsers = auth_parser.add_subparsers()
 
@@ -74,12 +68,12 @@ login_parser.add_argument('-u','--user',type=str,default="", help='DSM Login', d
 login_parser.add_argument('-p', '--pwd',type=str,default="", help='DSM Password', dest="PWD")
 login_parser.add_argument('-r', '--url',type=str,default="", help='DSM URL',dest="URL")
 login_parser.add_argument('-v', '--version',type=str,default=DEFAULT_DSM_VERSION, help='DSM Version',dest="DSMVERSION")
-login_parser.add_argument('-s', '--session',type=str,default="", help='Session Name',dest="SESSIONNAME")
+#login_parser.add_argument('-s', '--session',type=str,default="", help='Session Name',dest="SESSIONNAME")
 login_parser.set_defaults(func=login)
 
 # auth logout
 login_parser = auth_subparsers.add_parser('logout')
-login_parser.add_argument('-s', '--session',type=str,default="", help='Session Name',dest="SESSIONNAME")
+#login_parser.add_argument('-s', '--session',type=str,default="", help='Session Name',dest="SESSIONNAME")
 login_parser.set_defaults(func=logout)
 
 # auth list
@@ -91,14 +85,69 @@ sesslist_parser.set_defaults(func=listsessions)
 # network <show>
 #####
 
+def network(args):
+    network_show_supported_ops = ['OpenVPN','OpenVPNWithConf','L2TP','PPTP','PPPoE','Ethernet','Bond','CMS']
+    if not args.SESSIONNAME:
+        parser.error('no session name passed')
+    if args.NETWORKCONFITEM not in network_show_supported_ops:
+        parser.error('Conf Item not supported.')
+    NetworkLogics.get_network_info(args.NETWORKCONFITEM,args.SESSIONNAME,args.OUTPUTFORMAT)
+
 # Network cxommands
 network_parser = subparsers.add_parser('network')
 network_subparsers = network_parser.add_subparsers()
 
 # network show
+
 network_show_parser = network_subparsers.add_parser('show')
-network_show_parser.add_argument('--session','-s',type=str,default="", help='Session Name',dest="SESSIONNAME")
+network_show_parser.add_argument('--type','-t',type=str,default="OpenVPNWithConf", help='Network Conf Item <OpenVPN,OpenVPNWithConf,L2TP,PPTP,PPPoE,Ethernet,Bond,CMS>',dest="NETWORKCONFITEM")
 network_show_parser.set_defaults(func=network)
+
+#####
+# PACKAGE Parser
+# package <list,start,stop>
+#####
+
+def package_list(args):
+    if not args.SESSIONNAME:
+        parser.error('no session name passed')
+    PackageLogics.listPackages(args.OUTPUTFORMAT,args.SESSIONNAME)
+
+def package_start(args):
+    if not args.SESSIONNAME:
+        parser.error('no session name passed')
+    if not args.PCKNAME:
+        parser.error('no package name passed')
+    PackageLogics.stopOrStartPackage(args.PCKNAME,"start",args.SESSIONNAME)
+
+def package_stop(args):
+    if not args.SESSIONNAME:
+        parser.error('no session name passed')
+    if not args.PCKNAME:
+        parser.error('no package name passed')
+    PackageLogics.stopOrStartPackage(args.PCKNAME,"stop",args.SESSIONNAME)
+
+
+# Package commands
+package_parser = subparsers.add_parser('package')
+package_subparsers = package_parser.add_subparsers()
+
+# package list
+package_list_parser = package_subparsers.add_parser('list')
+#package_list_parser.add_argument('--session','-s',type=str,default="", help='Session Name',dest="SESSIONNAME")
+package_list_parser.set_defaults(func=package_list)
+
+# package start
+package_start_parser = package_subparsers.add_parser('start')
+#package_start_parser.add_argument('--session','-s',type=str,default="", help='Session Name',dest="SESSIONNAME")
+package_start_parser.add_argument('--name','-n',type=str,default="", help='Package Name',dest="PCKNAME")
+package_start_parser.set_defaults(func=package_start)
+
+# package stop
+package_stop_parser = package_subparsers.add_parser('stop')
+#package_stop_parser.add_argument('--session','-s',type=str,default="", help='Session Name',dest="SESSIONNAME")
+package_stop_parser.add_argument('--name','-n',type=str,default="", help='Package Name',dest="PCKNAME")
+package_stop_parser.set_defaults(func=package_stop)
 
 if __name__ == '__main__':
     args = parser.parse_args()
