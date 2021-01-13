@@ -42,11 +42,8 @@ The **Session Name** needs to be passed in all calls (it serves to retrieve the 
 
 Apart from the initial authentication call, each call should contain **at least 1 option**: **-s** (**-s** is used to specify the **Session Name**.)
 
-The output format can be set to CSV, DF (DataFrame) or JSON (Default) by using the -f option in addition to the -s option:
+The output format can be set to CSV, DF (DataFrame) or JSON (Default) by using the -f option in addition to the -s option
 
-```
-python ./synocli.py -s OrangeElephant -f DF package list
-```
 
 ## Commands & Subcommands Currently Available:
 
@@ -59,8 +56,31 @@ python ./synocli.py -s OrangeElephant -f DF package list
 * packages
   * list
   * start
-  * stop 
+  * stop
+* download station (dsm)
+  * list
 
+## Examples
+```
+# Authenticate
+./synocli.py auth login -u myUser -p "myPassword" -r "http://192.168.1.100:5000"
+```
+
+
+```
+# List Download Station entries (and display as a Dataframe)
+./synocli.py -s OrangeCat -f DF dsm list
+```
+
+```
+# List Download Station entries (and display as a CSV)
+./synocli.py -s OrangeCat -f CSV dsm list
+```
+
+```
+# List Download Station entries (and display as JSON)
+./synocli.py -s OrangeCat dsm list
+```
 ## TO DO
 
 add a list of python dependencies

@@ -16,6 +16,7 @@ sys.path.insert(1, './libs')
 import AuthLogics
 import NetworkLogics
 import PackageLogics
+import DSMLogics
 import DataUtils
 
 VERSION="0.0.1"
@@ -148,6 +149,28 @@ package_stop_parser = package_subparsers.add_parser('stop')
 #package_stop_parser.add_argument('--session','-s',type=str,default="", help='Session Name',dest="SESSIONNAME")
 package_stop_parser.add_argument('--name','-n',type=str,default="", help='Package Name',dest="PCKNAME")
 package_stop_parser.set_defaults(func=package_stop)
+
+
+#####
+# DSM Parser
+# dsm <list,start,stop>
+#####
+
+def dsm_records_list(args):
+    if not args.SESSIONNAME:
+        parser.error('no session name passed')
+    DSMLogics.listTorrents(args.OUTPUTFORMAT,args.SESSIONNAME)
+
+
+# Package commands
+dsm_parser = subparsers.add_parser('dsm')
+dsm_subparsers = dsm_parser.add_subparsers()
+
+# package list
+dsm_list_parser = dsm_subparsers.add_parser('list')
+#package_list_parser.add_argument('--session','-s',type=str,default="", help='Session Name',dest="SESSIONNAME")
+dsm_list_parser.set_defaults(func=dsm_records_list)
+
 
 if __name__ == '__main__':
     args = parser.parse_args()
