@@ -1,12 +1,15 @@
 import json
 import pandas as pd
 import logging
+import sys
 
+sys.path.insert(1, './libs')
+import ConvUtils
 
 def GetListAsCsv(jsonResults):
 
-    myDF = pd.DataFrame(jsonResults['data']["task"])
-    myDF.pop('additional')
+    #myDF = pd.DataFrame(jsonResults['data']["task"])
+    #myDF.pop('additional')
     #print(myDF)
 
     ItemList = jsonResults['data']['task']
@@ -17,6 +20,12 @@ def GetListAsCsv(jsonResults):
         details = item["additional"]["detail"]
 
         id = item["id"]
+        size = item["size"]
+        status = item["status"]
+        title = item["title"]
+        type = item["type"]
+        username = item["username"]
+
         completedTime = details['completed_time']
         connectedLeech = details['connected_leechers']
         connectedPeers = details['connected_peers']
@@ -24,23 +33,33 @@ def GetListAsCsv(jsonResults):
         dest = details['destination']
         startTime = details['started_time']
 
-        transferItems = "0"
-        speedDownload = "0"
-        sizeDownloaded = "0"
-        speedUpload = "0"
+        transferItems = item["additional"]["transfer"]
+        speedDownload = transferItems['speed_download']
+        sizeDownloaded = transferItems['size_downloaded']
+        speedUpload = transferItems['speed_upload']
 
-        if("transfer" in item["additional"]):
-            transferItems = item["additional"]["transfer"]
-            speedDownload = transferItems['speed_download']
-            sizeDownloaded = transferItems['size_downloaded']
-            speedUpload = transferItems['speed_upload']
+        if(completedTime != 0):
+            completedTime=ConvUtils.epoch_to_hr(completedTime)
 
-        new_row = {'id':id,'completedTime':completedTime,'connectedLeech':connectedLeech,'connectedPeers':connectedPeers,'createdTime':createdTime,'dest':dest,'startTime':startTime,'speedDownload':speedDownload}
+        new_row = {
+        'id':id,
+        'size':ConvUtils.sizeof_fmt(size),
+        'status':status,
+        'title':title,
+        'type':type,
+        'username':username,
+        'completedTime':completedTime,
+        'Leech':connectedLeech,
+        'Peers':connectedPeers,
+        'Created':ConvUtils.epoch_to_hr(createdTime),
+        'Dest':dest,
+        'StartTime':ConvUtils.epoch_to_hr(startTime),
+        'DLSpeed':ConvUtils.sizeof_fmt(speedDownload,"B/s"),
+        'ULSpeed':ConvUtils.sizeof_fmt(speedUpload,"B/s"),
+        'Downloaded':ConvUtils.sizeof_fmt(sizeDownloaded)
+        }
         AllRows.append(new_row)
 
     myDFAdditional = pd.DataFrame(AllRows)
-    #print(myDFAdditional)
 
-    FinalDF = pd.merge(myDF, myDFAdditional, on = "id", how = "inner")
-
-    return FinalDF
+    return myDFAdditional

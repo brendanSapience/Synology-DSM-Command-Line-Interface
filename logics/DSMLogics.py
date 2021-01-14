@@ -26,7 +26,7 @@ def get_torrent_list_url(dsmversion, sid):
 
         additional=[
         "detail",
-        "installed_info"
+        "transfer"
         ]
 
         params = {
