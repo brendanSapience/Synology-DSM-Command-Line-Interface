@@ -14,6 +14,62 @@ import AuthResponses
 import DSMTransformers
 import logging
 
+def stop_torrent_url(taskId, dsmversion, sid): #pause or resume for Operation
+    CgiModule = "/webapi/entry.cgi?"
+    UrlParameters = ""
+    Headers = {
+        'Content-Type': "application/json",
+        'cache-control': "no-cache"
+    }
+
+    if dsmversion=="7.0":
+
+        ids=[
+        taskId
+        ]
+
+        params = {
+        "api":"SYNO.DownloadStation2.Task.Complete",
+        "version":"1",
+        "method":"start",
+        "id":ids,
+        "_sid":sid
+        }
+    else:
+        return False,"",Headers
+
+    EncodedURI = urllib.parse.urlencode(params).replace("%27","%22").replace("+%22","%22")
+    UrlParameters = CgiModule+EncodedURI
+    return True,UrlParameters,Headers
+
+def change_torrent_status_url(Operation, taskId, dsmversion, sid): #pause or resume for Operation
+    CgiModule = "/webapi/entry.cgi?"
+    UrlParameters = ""
+    Headers = {
+        'Content-Type': "application/json",
+        'cache-control': "no-cache"
+    }
+
+    if dsmversion=="7.0":
+
+        ids=[
+        taskId
+        ]
+
+        params = {
+        "api":"SYNO.DownloadStation2.Task",
+        "version":"2",
+        "method":Operation,
+        "id":ids,
+        "_sid":sid
+        }
+    else:
+        return False,"",Headers
+
+    EncodedURI = urllib.parse.urlencode(params).replace("%27","%22").replace("+%22","%22")
+    UrlParameters = CgiModule+EncodedURI
+    return True,UrlParameters,Headers
+
 def get_torrent_list_url(dsmversion, sid):
     CgiModule = "/webapi/entry.cgi?"
     UrlParameters = ""

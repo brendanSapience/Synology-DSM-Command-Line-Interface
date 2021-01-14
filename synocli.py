@@ -17,6 +17,7 @@ import AuthLogics
 import NetworkLogics
 import PackageLogics
 import DSMLogics
+import FSLogics
 import DataUtils
 
 VERSION="0.0.1"
@@ -153,7 +154,7 @@ package_stop_parser.set_defaults(func=package_stop)
 
 #####
 # DSM Parser
-# dsm <list,start,stop>
+# dsm <list>
 #####
 
 def dsm_records_list(args):
@@ -171,6 +172,28 @@ dsm_list_parser = dsm_subparsers.add_parser('list')
 #package_list_parser.add_argument('--session','-s',type=str,default="", help='Session Name',dest="SESSIONNAME")
 dsm_list_parser.set_defaults(func=dsm_records_list)
 
+
+#####
+# FileStation Parser
+# fs <list>
+#####
+
+def fs_list(args):
+    if not args.SESSIONNAME:
+        parser.error('no session name passed')
+        if not args.FPATH:
+            parser.error('no path passed')
+    FSLogics.listFiles(args.FPATH,args.OUTPUTFORMAT,args.SESSIONNAME)
+
+
+# Package commands
+fs_parser = subparsers.add_parser('fs')
+fs_subparsers = fs_parser.add_subparsers()
+
+# package list
+fs_list_parser = fs_subparsers.add_parser('list')
+fs_list_parser.add_argument('--path','-p',type=str,default="", help='Path on NAS',dest="FPATH")
+fs_list_parser.set_defaults(func=fs_list)
 
 if __name__ == '__main__':
     args = parser.parse_args()

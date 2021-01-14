@@ -59,6 +59,8 @@ The output format can be set to CSV, DF (DataFrame) or JSON (Default) by using t
   * stop
 * download station (dsm)
   * list
+* file station (fs)
+  * list
 
 ## Examples
 ```
@@ -81,6 +83,13 @@ The output format can be set to CSV, DF (DataFrame) or JSON (Default) by using t
 # List Download Station entries (and display as JSON)
 ./synocli.py -s OrangeCat dsm list
 ```
+
+```
+# List files in a folder
+./synocli.py -s OrangeCat -f DF fs list -p "/somefolder/otherfolder"
+```
+
+
 ## TO DO
 
-add a list of python dependencies
+add more stuff, feel free to request!
