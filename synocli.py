@@ -181,9 +181,10 @@ dsm_list_parser.set_defaults(func=dsm_records_list)
 def fs_list(args):
     if not args.SESSIONNAME:
         parser.error('no session name passed')
-        if not args.FPATH:
-            parser.error('no path passed')
-    FSLogics.listFiles(args.FPATH,args.OUTPUTFORMAT,args.SESSIONNAME)
+    if not args.FPATH or args.FPATH == "/" or args.FPATH == "\\":
+        FSLogics.listShares(args.OUTPUTFORMAT,args.SESSIONNAME)
+    else:
+        FSLogics.listFiles(args.FPATH,args.OUTPUTFORMAT,args.SESSIONNAME)
 
 
 # Package commands

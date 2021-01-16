@@ -24,7 +24,41 @@ def processAPIResponse(response):
         print("API Error Code: "+str(response.status_code))
         return False
     else:
-        return True
+        result = json.loads(response.text)
+        #print(result)
+        if 'error' in result:
+            JsonError = result['error']
+            if 'code' in JsonError:
+                APIErrorCode = JsonError['code']
+
+                if APIErrorCode == 100:
+                    print("Error: DSM Returned an unknown error.")
+                    return False
+                elif APIErrorCode == 101:
+                    print("Error: Invalid parameter passed to DSM.")
+                    return False
+                elif APIErrorCode == 102:
+                    print("Error: The requested API / Service is not installed or does not exist.")
+                    return False
+                elif APIErrorCode == 103:
+                    print("Error: The requested API / Service Method is not installed or does not exist.")
+                    return False
+                elif APIErrorCode == 104:
+                    print("Error: The requested API / Service does not support the version.")
+                    return False
+                elif APIErrorCode == 105:
+                    print("Error: DSM returned a permission issue with the current user.")
+                    return False
+                elif APIErrorCode == 106:
+                    print("Error: the current session has timed out.")
+                    return False
+                elif APIErrorCode == 107:
+                    print("Error: currrent session interrupted due to duplicate login.")
+                    return False
+            else:
+                print("Undetermined API Error: "+str(result))
+        else:
+            return True
 
 def ProcessStdResponse(res,CsvOutput):
     CsvOutput = ProcessBool(CsvOutput)

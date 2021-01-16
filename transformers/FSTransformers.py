@@ -8,15 +8,10 @@ import ConvUtils
 
 def GetListAsCsv(jsonResults):
 
-    #myDF = pd.DataFrame(jsonResults['data']["task"])
-    #myDF.pop('additional')
-    #print(myDF)
-
     ItemList = jsonResults['data']['files']
     AllRows = []
     for item in ItemList:
 
-        #print(item["additional"]["detail"])
         details = item["additional"]
 
         isDir = item["isdir"]
@@ -33,7 +28,36 @@ def GetListAsCsv(jsonResults):
         'realPath':fRealPath,
         'path':fPath
         }
-        
+
+        AllRows.append(new_row)
+
+    myDFAdditional = pd.DataFrame(AllRows)
+
+    return myDFAdditional
+
+
+def GetShareListAsCsv(jsonResults):
+
+    ItemList = jsonResults['data']['shares']
+    AllRows = []
+    for item in ItemList:
+
+        details = item["additional"]["volume_status"]
+
+        isDir = item["isdir"]
+        fName = item["name"]
+        fPath = item["path"]
+        fFreeSpace = details['freespace']
+        fTotalSpace = details['totalspace']
+
+        new_row = {
+        'name':fName,
+        'isDir':isDir,
+        'path':fPath,
+        'totalSpace':ConvUtils.sizeof_fmt(fTotalSpace,"B"),
+        'freeSpace':ConvUtils.sizeof_fmt(fFreeSpace,"B")
+        }
+
         AllRows.append(new_row)
 
     myDFAdditional = pd.DataFrame(AllRows)
