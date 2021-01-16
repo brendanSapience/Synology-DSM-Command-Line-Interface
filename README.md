@@ -85,10 +85,14 @@ The output format can be set to CSV, DF (DataFrame) or JSON (Default) by using t
 ```
 
 ```
-# List files in a folder
+# List files in a folder (and display as DataFrame)
 ./synocli.py -s OrangeCat -f DF fs list -p "/somefolder/otherfolder"
 ```
 
+```
+# List shares (and display as DataFrame)
+./synocli.py -s OrangeCat -f DF fs list
+```
 
 ## TO DO
 
