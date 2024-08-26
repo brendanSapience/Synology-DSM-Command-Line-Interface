@@ -25,7 +25,7 @@ jobs:
 
       - name: Access a secure resource
         env:
-          TEST_URL: http://zeus.lan/
+          TEST_URL: https://zeus.lan:5001/
         run: |
           echo Calling $TEST_URL 🚀
           curl -v $TEST_URL
