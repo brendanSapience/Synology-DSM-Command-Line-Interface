@@ -1,4 +1,4 @@
-name: Twingate on GitHub Actions Demo
+name: Twingate on GitHub Actions Demo 
 on: [push]
 jobs:
   Twingate-GitHub-Actions:
